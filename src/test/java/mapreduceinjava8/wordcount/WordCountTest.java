@@ -3,9 +3,7 @@ package mapreduceinjava8.wordcount;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -114,16 +112,14 @@ public class WordCountTest {
         );
 
         // then
+        final Map<String, Long> comparison = wordCounter.wordCount(GETTYSBURG_ADDRESS + " " + THOMAS_PAINE_QUOTE);
 
         for (final Map.Entry<String, Long> entry : merged.entrySet()) {
 
             final String word = entry.getKey();
             final Long count = entry.getValue();
 
-            final Long component1 = zeroIfNull(gettysburgAddress.get(word));
-            final Long component2 = zeroIfNull(thomasPaineQuote.get(word));
-
-            assertThat(count, is(equalTo(component1 + component2)));
+            assertThat(count, is(equalTo(comparison.get(word))));
         }
     }
 }
