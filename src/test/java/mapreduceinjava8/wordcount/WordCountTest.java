@@ -1,22 +1,27 @@
 package mapreduceinjava8.wordcount;
 
+import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class WordCountTest {
 
     // given
+    private static final String INTO_WORDS = "\\W+";
+
     private static final String GETTYSBURG_ADDRESS = "Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, " +
             "and dedicated to the proposition that all men are created equal. Now we are engaged in a great civil war, testing whether that nation, or any nation so conceived and so dedicated, " +
             "can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here " +
@@ -27,13 +32,27 @@ public class WordCountTest {
             "we take increased devotion to that cause for which they gave the last full measure of devotion -- that we here highly resolve that these dead shall not have died in vain -- " +
             "that this nation, under God, shall have a new birth of freedom -- and that government of the people, by the people, for the people, shall not perish from the earth.";
 
-    public static final int GETTYSBURG_ADDRESS_UNIQUE_WORDS = 143;
+    private static final int GETTYSBURG_ADDRESS_UNIQUE_WORDS = 142;
+    private static final long GETTYSBURG_ADDRESS_TOTAL_WORDS = 272L;
+
+    private static final String THOMAS_PAINE_QUOTE = " love the man that can smile in trouble, that can gather strength from distress, and grow brave by reflection." +
+            "'Tis the business of little minds to shrink, but he whose heart is firm, and whose conscience approves his conduct, will pursue his principles unto death.";
+
+
+    /** System under test. */
+    private WordCounter wordCounter;
+
+    @Before
+    public void setUp() {
+
+        wordCounter = new WordCounter();
+    }
 
     @Test
     public void list_of_words_should_be_word_counted() {
 
         // given
-        final String[] array = GETTYSBURG_ADDRESS.split("\\W");
+        final String[] array = GETTYSBURG_ADDRESS.split(INTO_WORDS);
         final List<String> words = Arrays.asList(array);
 
         // when
@@ -41,6 +60,27 @@ public class WordCountTest {
                 .collect(
                         groupingBy(identity(), counting())
                 );
+
+        // then
+        assertThat(wordCount.keySet(), hasSize(GETTYSBURG_ADDRESS_UNIQUE_WORDS));
+    }
+
+    @Test
+    public void string_should_be_split() {
+
+        // when
+        final Stream<String> split = Stream.of(GETTYSBURG_ADDRESS.split("\\W+"));
+
+        // then
+        final long count = split.count();
+        assertThat(count, is(equalTo(GETTYSBURG_ADDRESS_TOTAL_WORDS)));
+    }
+
+    @Test
+    public void word_count_should_work_on_single_line() {
+
+        // when
+        final Map<String, Long> wordCount = wordCounter.wordCount(GETTYSBURG_ADDRESS);
 
         // then
         assertThat(wordCount.keySet(), hasSize(GETTYSBURG_ADDRESS_UNIQUE_WORDS));
