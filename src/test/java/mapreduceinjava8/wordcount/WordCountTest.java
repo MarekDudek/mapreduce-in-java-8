@@ -1,12 +1,14 @@
 package mapreduceinjava8.wordcount;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.function.Function.identity;
@@ -84,5 +86,50 @@ public class WordCountTest {
 
         // then
         assertThat(wordCount.keySet(), hasSize(GETTYSBURG_ADDRESS_UNIQUE_WORDS));
+    }
+
+    @Test
+    public void multiple_word_counts_should_be_combined() {
+
+        // when
+        final Map<String, Long> gettysburgAddress = wordCounter.wordCount(GETTYSBURG_ADDRESS);
+        final Map<String, Long> thomasPaineQuote = wordCounter.wordCount(THOMAS_PAINE_QUOTE);
+
+
+        final Stream<Map<String, Long>> wordCounts = Stream.of(gettysburgAddress, thomasPaineQuote);
+
+        //final ToLongFunction<Map<String, Long>> mapper = null;
+        //wordCounts.collect(Collectors.groupingBy(identity(), Collectors.summarizingLong(mapper)));
+
+        final Stream<Map.Entry<String, Long>> entryStream = wordCounts.flatMap(map -> map.entrySet().stream());
+
+
+        final Function<Map.Entry<String, Long>, String> keyMapper = entry -> entry.getKey();
+        final Function<Map.Entry<String, Long>, Long> valueMapper = entry -> entry.getValue();
+
+        final BinaryOperator<Long> mergeFunction = new BinaryOperator<Long>() {
+            @Override
+            public Long apply(final Long first, final Long second) {
+                return new Long(first.longValue() + second.longValue());
+            }
+        };
+
+        final Map<String, Long> merged = entryStream.collect(Collectors.toMap(keyMapper, valueMapper, mergeFunction));
+
+        System.out.println(merged);
+
+        // then
+        for (final Map.Entry<String, Long> entry : merged.entrySet()) {
+
+            final String word = entry.getKey();
+            final Long count = entry.getValue();
+
+            final Long component1 = gettysburgAddress.get(word);
+            final Long component2 = thomasPaineQuote.get(word);
+
+            final long sum = (component1 == null ? 0 : component1) + (component2 == null ? 0 : component2);
+
+            assertThat(count, is(equalTo(sum)));
+        }
     }
 }
