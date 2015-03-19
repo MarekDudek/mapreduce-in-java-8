@@ -14,9 +14,8 @@ import java.util.stream.Stream;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static mapreduceinjava8.utils.NumberUtils.zeroIfNull;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class WordCountTest {
@@ -37,7 +36,7 @@ public class WordCountTest {
     private static final int GETTYSBURG_ADDRESS_UNIQUE_WORDS = 142;
     private static final long GETTYSBURG_ADDRESS_TOTAL_WORDS = 272L;
 
-    private static final String THOMAS_PAINE_QUOTE = " love the man that can smile in trouble, that can gather strength from distress, and grow brave by reflection." +
+    private static final String THOMAS_PAINE_QUOTE = "I love the man that can smile in trouble, that can gather strength from distress, and grow brave by reflection." +
             "'Tis the business of little minds to shrink, but he whose heart is firm, and whose conscience approves his conduct, will pursue his principles unto death.";
 
 
@@ -91,16 +90,12 @@ public class WordCountTest {
     @Test
     public void multiple_word_counts_should_be_combined() {
 
-        // when
+        // given
         final Map<String, Long> gettysburgAddress = wordCounter.wordCount(GETTYSBURG_ADDRESS);
         final Map<String, Long> thomasPaineQuote = wordCounter.wordCount(THOMAS_PAINE_QUOTE);
 
-
+        // when
         final Stream<Map<String, Long>> wordCounts = Stream.of(gettysburgAddress, thomasPaineQuote);
-
-        //final ToLongFunction<Map<String, Long>> mapper = null;
-        //wordCounts.collect(Collectors.groupingBy(identity(), Collectors.summarizingLong(mapper)));
-
         final Stream<Map.Entry<String, Long>> entryStream = wordCounts.flatMap(map -> map.entrySet().stream());
 
 
@@ -114,22 +109,21 @@ public class WordCountTest {
             }
         };
 
-        final Map<String, Long> merged = entryStream.collect(Collectors.toMap(keyMapper, valueMapper, mergeFunction));
-
-        System.out.println(merged);
+        final Map<String, Long> merged = entryStream.collect(
+                Collectors.toMap(keyMapper, valueMapper, mergeFunction)
+        );
 
         // then
+
         for (final Map.Entry<String, Long> entry : merged.entrySet()) {
 
             final String word = entry.getKey();
             final Long count = entry.getValue();
 
-            final Long component1 = gettysburgAddress.get(word);
-            final Long component2 = thomasPaineQuote.get(word);
+            final Long component1 = zeroIfNull(gettysburgAddress.get(word));
+            final Long component2 = zeroIfNull(thomasPaineQuote.get(word));
 
-            final long sum = (component1 == null ? 0 : component1) + (component2 == null ? 0 : component2);
-
-            assertThat(count, is(equalTo(sum)));
+            assertThat(count, is(equalTo(component1 + component2)));
         }
     }
 }
