@@ -18,6 +18,8 @@ import static org.junit.Assert.assertThat;
 
 public class LambdaTest {
 
+    public static final String EXAMPLE_FILE = "us/input/counties.csv";
+
     @Test
     public void lambdas_should_work() {
 
@@ -38,7 +40,7 @@ public class LambdaTest {
     public void data_from_other_project_should_be_accessible() {
 
         // given
-        final List<String> lines = FileAccessor.readLinesFromResources("us/counties.csv");
+        final List<String> lines = FileAccessor.readLinesFromResources(EXAMPLE_FILE);
 
         // then
         assertThat(lines, hasSize(3142));
@@ -48,7 +50,7 @@ public class LambdaTest {
     public void test() throws IOException {
 
         // when
-        final InputStream stream = getClass().getClassLoader().getResourceAsStream("us/counties.csv");
+        final InputStream stream = getClass().getClassLoader().getResourceAsStream(EXAMPLE_FILE);
         final List<String> lines = IOUtils.readLines(stream);
 
         // then
