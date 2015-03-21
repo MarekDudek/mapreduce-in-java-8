@@ -2,9 +2,6 @@ package mapreduceinjava8.wordcount;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import mapreduceinjava8.utils.HasEqualContents;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Map;
@@ -19,25 +16,41 @@ public class HasEqualContentsTest {
     public void different_implementations_should_be_equal() {
 
         // given
-        final Map<String, Integer> one = ImmutableMap.<String, Integer>builder()
+        final Map<String, Integer> expected = Maps.newHashMap();
+        expected.put("one", 1);
+
+        final Map<String, Integer> actual = ImmutableMap.<String, Integer>builder()
                 .put("one", 1).build();
 
-        final Map<String, Integer> two = Maps.newHashMap();
-        two.put("one", 1);
-
         // then
-        assertThat(one, hasEqualContents(two));
+        assertThat(actual, hasEqualContents(expected));
     }
 
     @Test(expected = AssertionError.class)
     public void keys_must_be_equal() {
 
         // given
-        final Map<String, Integer> actual = ImmutableMap.<String, Integer>builder()
-                .put("one", 1).build();
-
         final Map<String, Integer> expected = Maps.newHashMap();
-        expected.put("two", 1);
+        expected.put("one", 1);
+
+        final Map<String, Integer> actual = ImmutableMap.<String, Integer>builder()
+                .put("two", 1).build();
+
+
+        // then
+        assertThat(actual, hasEqualContents(expected));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void values_must_be_equal() {
+
+        // given
+        final Map<String, Integer> expected = Maps.newHashMap();
+        expected.put("one", 1);
+
+
+        final Map<String, Integer> actual = ImmutableMap.<String, Integer>builder()
+                .put("one", 2).build();
 
         // then
         assertThat(actual, hasEqualContents(expected));

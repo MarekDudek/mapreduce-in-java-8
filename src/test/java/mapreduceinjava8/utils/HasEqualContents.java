@@ -10,10 +10,8 @@ public class HasEqualContents<KEY, VALUE> extends TypeSafeMatcher<Map<KEY, VALUE
 
     private final Map<KEY, VALUE> expected;
 
-    private Object difference;
-
-    Sets.SetView<Map.Entry<KEY, VALUE>> missingInExpected;
-    Sets.SetView<Map.Entry<KEY, VALUE>> obsoleteInActual;
+    private Sets.SetView<Map.Entry<KEY, VALUE>> missingFromExpected;
+    private Sets.SetView<Map.Entry<KEY, VALUE>> obsoleteInActual;
 
     public static <KEY, VALUE> HasEqualContents<KEY, VALUE> hasEqualContents(final Map<KEY, VALUE> expected) {
         return new HasEqualContents<>(expected);
@@ -26,14 +24,10 @@ public class HasEqualContents<KEY, VALUE> extends TypeSafeMatcher<Map<KEY, VALUE
     @Override
     protected boolean matchesSafely(final Map<KEY, VALUE> actual) {
 
-        missingInExpected = Sets.difference(expected.entrySet(), actual.entrySet());
+        missingFromExpected = Sets.difference(expected.entrySet(), actual.entrySet());
         obsoleteInActual = Sets.difference(actual.entrySet(), expected.entrySet());
 
-        if (missingInExpected.isEmpty() && obsoleteInActual.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return missingFromExpected.isEmpty() && obsoleteInActual.isEmpty();
     }
 
     @Override
@@ -47,10 +41,10 @@ public class HasEqualContents<KEY, VALUE> extends TypeSafeMatcher<Map<KEY, VALUE
 
         super.describeMismatchSafely(item, description);
 
-        if (!missingInExpected.isEmpty()) {
+        if (!missingFromExpected.isEmpty()) {
             newLine(description);
             description.appendText("Elements missing from expected: ");
-            description.appendValue(missingInExpected);
+            description.appendValue(missingFromExpected);
         }
 
         if (!obsoleteInActual.isEmpty()) {
