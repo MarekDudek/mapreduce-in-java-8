@@ -31,7 +31,7 @@ public class WordCountTest {
     private static final int GETTYSBURG_ADDRESS_UNIQUE_WORDS = 154;
     private static final long GETTYSBURG_ADDRESS_TOTAL_WORDS = 272L;
 
-    private static final String THOMAS_PAINE_QUOTE = "I love the man that can smile in trouble, that can gather strength from distress, and grow brave by reflection." +
+    private static final String THOMAS_PAINE_QUOTE = "I love the man that can smile in trouble, that can gather strength from distress, and grow brave by reflection. " +
             "'Tis the business of little minds to shrink, but he whose heart is firm, and whose conscience approves his conduct, will pursue his principles unto death.";
 
 
@@ -103,14 +103,19 @@ public class WordCountTest {
                 );
 
         // then
-        final Map<String, Long> comparison = wordCounter.wordCount(GETTYSBURG_ADDRESS + " " + THOMAS_PAINE_QUOTE);
+        final Map<String, Long> comparisonResults = wordCounter.wordCount(GETTYSBURG_ADDRESS + " " + THOMAS_PAINE_QUOTE);
+        final Map<String, Integer> hadoopResults = new WordCountHadoopResultsImporter().importResults("wordcount/output/part-00000");
 
         for (final Map.Entry<String, Long> entry : merged.entrySet()) {
 
             final String word = entry.getKey();
             final Long count = entry.getValue();
 
-            assertThat(count, is(equalTo(comparison.get(word))));
+            final Long comparison = comparisonResults.get(word);
+            final Integer hadoop = hadoopResults.get(word);
+
+            assertThat(count, is(equalTo(comparison)));
+            assertThat(count, is(equalTo((long) hadoop)));
         }
     }
 }
