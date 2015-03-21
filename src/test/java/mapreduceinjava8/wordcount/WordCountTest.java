@@ -1,5 +1,6 @@
 package mapreduceinjava8.wordcount;
 
+import mapreduceinjava8.utils.HasEqualContents;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
+import static mapreduceinjava8.utils.HasEqualContents.hasEqualContents;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -105,6 +107,9 @@ public class WordCountTest {
         // then
         final Map<String, Long> comparisonResults = wordCounter.wordCount(GETTYSBURG_ADDRESS + " " + THOMAS_PAINE_QUOTE);
         final Map<String, Integer> hadoopResults = new WordCountHadoopResultsImporter().importResults("wordcount/output/part-00000");
+
+
+        assertThat(merged, hasEqualContents(comparisonResults));
 
         for (final Map.Entry<String, Long> entry : merged.entrySet()) {
 
