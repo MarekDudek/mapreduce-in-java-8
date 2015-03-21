@@ -94,22 +94,12 @@ public class WordCountTest {
 
         // when
         final Stream<Map<String, Long>> wordCounts = Stream.of(gettysburgAddress, thomasPaineQuote);
-        final Stream<Map.Entry<String, Long>> entryStream = wordCounts.flatMap(map -> map.entrySet().stream());
 
-
-        final Function<Map.Entry<String, Long>, String> keyMapper = entry -> entry.getKey();
-        final Function<Map.Entry<String, Long>, Long> valueMapper = entry -> entry.getValue();
-
-        final BinaryOperator<Long> mergeFunction = new BinaryOperator<Long>() {
-            @Override
-            public Long apply(final Long first, final Long second) {
-                return new Long(first.longValue() + second.longValue());
-            }
-        };
-
-        final Map<String, Long> merged = entryStream.collect(
-                Collectors.toMap(keyMapper, valueMapper, mergeFunction)
-        );
+        final Map<String, Long> merged = wordCounts
+                .flatMap(map -> map.entrySet().stream())
+                .collect(
+                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a + b)
+                );
 
         // then
         final Map<String, Long> comparison = wordCounter.wordCount(GETTYSBURG_ADDRESS + " " + THOMAS_PAINE_QUOTE);
