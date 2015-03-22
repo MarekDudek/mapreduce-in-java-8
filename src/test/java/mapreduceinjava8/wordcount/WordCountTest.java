@@ -1,6 +1,5 @@
 package mapreduceinjava8.wordcount;
 
-import mapreduceinjava8.utils.HasEqualContents;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -98,7 +97,7 @@ public class WordCountTest {
         // when
         final Stream<Map<String, Long>> wordCounts = Stream.of(gettysburgAddress, thomasPaineQuote);
 
-        final Map<String, Long> merged = wordCounts
+        final Map<String, Long> mergedWordCount = wordCounts
                 .flatMap(map -> map.entrySet().stream())
                 .collect(
                         Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a + b)
@@ -106,9 +105,9 @@ public class WordCountTest {
 
         // then
         final Map<String, Long> comparisonResults = wordCounter.wordCount(GETTYSBURG_ADDRESS + " " + THOMAS_PAINE_QUOTE);
-        final Map<String, Integer> hadoopResults = new WordCountHadoopResultsImporter().importResults("wordcount/output/part-00000");
+        assertThat(mergedWordCount, hasEqualContents(comparisonResults));
 
-
-        assertThat(merged, hasEqualContents(comparisonResults));
+        final Map<String, Long> hadoopResults = new WordCountHadoopResultsImporter().importResults("wordcount/output/part-00000");
+        assertThat(mergedWordCount, hasEqualContents(hadoopResults));
     }
 }
