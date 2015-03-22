@@ -1,8 +1,12 @@
 package mapreduceinjava8.wordcount;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +39,29 @@ public class WordCountTest {
     private static final String THOMAS_PAINE_QUOTE = "I love the man that can smile in trouble, that can gather strength from distress, and grow brave by reflection. " +
             "'Tis the business of little minds to shrink, but he whose heart is firm, and whose conscience approves his conduct, will pursue his principles unto death.";
 
+    private static List<String> FIRST_LINES;
+    private static List<String> SECOND_LINES;
+
+    private static List<List<String>> ALL_LINES;
 
     /** System under test. */
     private WordCounter wordCounter;
 
     private TextSplitter splitter;
+
+    @BeforeClass
+    public static void setUpClass() throws IOException {
+
+        final ClassLoader loader = WordCountTest.class.getClassLoader();
+
+        final InputStream firstStream = loader.getResourceAsStream("wordcount/input/gettysburg-address.txt");
+        FIRST_LINES = IOUtils.readLines(firstStream);
+
+        final InputStream secondStream = loader.getResourceAsStream("wordcount/input/thomas-paine-quote-1.txt");
+        SECOND_LINES = IOUtils.readLines(secondStream);
+
+        ALL_LINES = Arrays.asList(FIRST_LINES, SECOND_LINES);
+    }
 
     @Before
     public void setUp() {
@@ -109,5 +131,19 @@ public class WordCountTest {
 
         final Map<String, Long> hadoopResults = new WordCountHadoopResultsImporter().importResults("wordcount/output/part-00000");
         assertThat(mergedWordCount, hasEqualContents(hadoopResults));
+    }
+
+    @Test
+    public void input_from_files_should_be_word_counted() {
+
+        // when
+        final Map<String, Long> wordCount = wordCounter.wordCount(ALL_LINES);
+
+        // then
+        final Map<String, Long> comparisonResults = wordCounter.wordCount(GETTYSBURG_ADDRESS + " " + THOMAS_PAINE_QUOTE);
+        assertThat(wordCount, hasEqualContents(comparisonResults));
+
+        final Map<String, Long> hadoopResults = new WordCountHadoopResultsImporter().importResults("wordcount/output/part-00000");
+        assertThat(wordCount, hasEqualContents(hadoopResults));
     }
 }
