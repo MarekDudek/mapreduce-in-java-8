@@ -24,12 +24,15 @@ public class WordCounter {
     public Map<String, Long> wordCount(final List<List<String>> lines) {
 
         final Stream<Map<String, Long>> wordCounts = lines.stream()
-                .flatMap(Collection::stream).map(string -> wordCount(string));
+                .flatMap(Collection::stream)
+                .map(string -> wordCount(string));
 
         final Map<String, Long> wordCount = wordCounts
                 .flatMap(map -> map.entrySet().stream())
                 .collect(
-                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a + b)
+                        Collectors.toMap(
+                                Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a + b
+                        )
                 );
 
         return wordCount;

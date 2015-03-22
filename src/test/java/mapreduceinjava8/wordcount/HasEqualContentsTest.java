@@ -7,7 +7,6 @@ import org.junit.Test;
 import java.util.Map;
 
 import static mapreduceinjava8.utils.HasEqualContents.hasEqualContents;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class HasEqualContentsTest {
