@@ -43,13 +43,13 @@ public class HasEqualContents<KEY, VALUE> extends TypeSafeMatcher<Map<KEY, VALUE
 
         if (!missingFromExpected.isEmpty()) {
             newLine(description);
-            description.appendText("Elements missing from expected: ");
+            description.appendText("Entries missing from expected: ");
             description.appendValue(missingFromExpected);
         }
 
         if (!obsoleteInActual.isEmpty()) {
             newLine(description);
-            description.appendText("Elements obsolete in actual: ");
+            description.appendText("Entries obsolete in actual: ");
             description.appendValue(obsoleteInActual);
         }
     }

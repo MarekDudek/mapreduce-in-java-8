@@ -110,17 +110,5 @@ public class WordCountTest {
 
 
         assertThat(merged, hasEqualContents(comparisonResults));
-
-        for (final Map.Entry<String, Long> entry : merged.entrySet()) {
-
-            final String word = entry.getKey();
-            final Long count = entry.getValue();
-
-            final Long comparison = comparisonResults.get(word);
-            final Integer hadoop = hadoopResults.get(word);
-
-            assertThat(count, is(equalTo(comparison)));
-            assertThat(count, is(equalTo((long) hadoop)));
-        }
     }
 }
