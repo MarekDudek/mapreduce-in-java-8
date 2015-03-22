@@ -2,6 +2,7 @@ package mapreduceinjava8.wordcount;
 
 import com.google.common.base.Joiner;
 import mapreducedata.FileAccessor;
+import mapreducedata.wordcount.WordCountHadoopResultsImporter;
 import org.junit.Before;
 import org.junit.Test;
 
