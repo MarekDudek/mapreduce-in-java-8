@@ -28,7 +28,7 @@ public class MaxTemperatureTest {
 
     // expected results
     public static final ImmutableList<Integer> MAX_TEMPERATURES = ImmutableList.of(317, 244);
-    public static final ImmutableMap<Integer, Integer> MAX_TEMPERATURES_FOR_YEAR = ImmutableMap.of(1901, 317, 1902, 244);
+    public static final ImmutableMap<Integer, Integer> MAX_TEMPERATURE_FOR_YEARS = ImmutableMap.of(1901, 317, 1902, 244);
 
     @Test
     public void max_temperature_from_single_year_should_be_correctly_computed() {
@@ -69,15 +69,15 @@ public class MaxTemperatureTest {
     public void test() {
 
         // given
-        final ImmutableMap<Integer, List<WeatherData>> data = ImmutableMap.of(1901, DATA_1901, 1902, DATA_1902);
+        final ImmutableMap<Integer, List<WeatherData>> recordsForYears = ImmutableMap.of(1901, DATA_1901, 1902, DATA_1902);
 
         // when
-        final Map<Integer, Integer> result = data.entrySet().stream()
+        final Map<Integer, Integer> maxTemperatureForYears = recordsForYears.entrySet().stream()
                 .collect(
-                        Collectors.toMap(Map.Entry::getKey, entry -> MAX_TEMPERATURE.inSingleCollection(entry.getValue()))
+                        Collectors.toMap(Map.Entry::getKey, recordsForYear -> MAX_TEMPERATURE.inSingleCollection(recordsForYear.getValue()))
                 );
 
         // then
-        assertThat(MAX_TEMPERATURES_FOR_YEAR, hasEqualContents(result));
+        assertThat(MAX_TEMPERATURE_FOR_YEARS, hasEqualContents(maxTemperatureForYears));
     }
 }
