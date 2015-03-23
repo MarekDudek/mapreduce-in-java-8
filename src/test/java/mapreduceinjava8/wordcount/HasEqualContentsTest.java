@@ -35,7 +35,6 @@ public class HasEqualContentsTest {
         final Map<String, Integer> actual = ImmutableMap.<String, Integer>builder()
                 .put("two", 1).build();
 
-
         // then
         assertThat(actual, hasEqualContents(expected));
     }
@@ -46,7 +45,6 @@ public class HasEqualContentsTest {
         // given
         final Map<String, Integer> expected = Maps.newHashMap();
         expected.put("one", 1);
-
 
         final Map<String, Integer> actual = ImmutableMap.<String, Integer>builder()
                 .put("one", 2).build();
@@ -63,7 +61,6 @@ public class HasEqualContentsTest {
         expected.put("one", 1);
         expected.put("two", 2);
 
-
         final Map<String, Integer> actual = ImmutableMap.<String, Integer>builder()
                 .put("one", 1).build();
 
@@ -77,7 +74,6 @@ public class HasEqualContentsTest {
         // given
         final Map<String, Integer> expected = Maps.newHashMap();
         expected.put("one", 1);
-
 
         final Map<String, Integer> actual = ImmutableMap.<String, Integer>builder()
                 .put("one", 1)

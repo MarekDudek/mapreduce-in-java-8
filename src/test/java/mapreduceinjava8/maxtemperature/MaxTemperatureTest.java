@@ -1,5 +1,6 @@
 package mapreduceinjava8.maxtemperature;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mapreducedata.maxtemperature.WeatherData;
 import mapreducedata.maxtemperature.WeatherDataImporter;
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.google.common.collect.ImmutableList.of;
 import static mapreduceinjava8.utils.HasEqualContents.hasEqualContents;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -25,6 +25,10 @@ public class MaxTemperatureTest {
 
     /** System under test. */
     public static final MaxTemperature MAX_TEMPERATURE = new MaxTemperature();
+
+    // expected results
+    public static final ImmutableList<Integer> MAX_TEMPERATURES = ImmutableList.of(317, 244);
+    public static final ImmutableMap<Integer, Integer> MAX_TEMPERATURES_FOR_YEAR = ImmutableMap.of(1901, 317, 1902, 244);
 
     @Test
     public void max_temperature_from_single_year_should_be_correctly_computed() {
@@ -45,7 +49,7 @@ public class MaxTemperatureTest {
                 .collect(Collectors.toList());
 
         // then
-        assertThat(of(317, 244), is(maxTemperatures));
+        assertThat(MAX_TEMPERATURES, is(maxTemperatures));
     }
 
     @Test
@@ -58,7 +62,7 @@ public class MaxTemperatureTest {
                 .collect(Collectors.toList());
 
         // then
-        assertThat(of(317, 244), is(maxTemperatures));
+        assertThat(MAX_TEMPERATURES, is(maxTemperatures));
     }
 
     @Test
@@ -68,11 +72,12 @@ public class MaxTemperatureTest {
         final ImmutableMap<Integer, List<WeatherData>> data = ImmutableMap.of(1901, DATA_1901, 1902, DATA_1902);
 
         // when
-        final Stream<Map.Entry<Integer, List<WeatherData>>> entries = data.entrySet().stream();
-        final Map<Integer, Integer> result = entries.collect(Collectors.toMap(Map.Entry::getKey, entry -> MAX_TEMPERATURE.inSingleCollection(entry.getValue())));
+        final Map<Integer, Integer> result = data.entrySet().stream()
+                .collect(
+                        Collectors.toMap(Map.Entry::getKey, entry -> MAX_TEMPERATURE.inSingleCollection(entry.getValue()))
+                );
 
         // then
-        assertThat(ImmutableMap.of(1901, 317, 1902, 244), hasEqualContents(result));
-
+        assertThat(MAX_TEMPERATURES_FOR_YEAR, hasEqualContents(result));
     }
 }

@@ -35,7 +35,6 @@ public class HasEqualContents<KEY, VALUE> extends TypeSafeMatcher<Map<KEY, VALUE
         description.appendValue(expected);
     }
 
-
     @Override
     protected void describeMismatchSafely(final Map<KEY, VALUE> item, final Description description) {
 
