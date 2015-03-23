@@ -1,17 +1,17 @@
 package mapreduceinjava8.maxtemperature;
 
-import mapreducedata.maxtemperature.WeatherDataRecord;
+import mapreducedata.maxtemperature.WeatherData;
 
 import java.util.List;
 
 public class MaxTemperature {
 
-    public Integer compute(final List<WeatherDataRecord> data) {
+    public Integer compute(final List<WeatherData> data) {
 
         final Integer maxTemperature = data.stream()
-                .filter(WeatherDataRecord::isAirTemperaturePresent)
-                .filter(WeatherDataRecord::isQualitySufficient)
-                .map(WeatherDataRecord::getAirTemperature)
+                .filter(WeatherData::isAirTemperaturePresent)
+                .filter(WeatherData::isQualitySufficient)
+                .map(WeatherData::getAirTemperature)
                 .reduce(Math::max).get();
 
         return maxTemperature;
