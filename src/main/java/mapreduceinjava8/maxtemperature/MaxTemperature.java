@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 public class MaxTemperature {
 
-    public Integer maxTemperatureInSingleCollection(final Collection<WeatherData> data) {
+    public Integer inSingleCollection(final Collection<WeatherData> data) {
 
         final Integer maxTemperature = data.stream()
                 .filter(WeatherData::isAirTemperaturePresent)
@@ -19,7 +19,7 @@ public class MaxTemperature {
         return maxTemperature;
     }
 
-    public Optional<Integer> maybeMaxTemperatureInSingleCollection(final Collection<WeatherData> data) {
+    public Optional<Integer> maybeInSingleCollection(final Collection<WeatherData> data) {
 
         final Stream<Integer> integers = data.stream()
                 .filter(WeatherData::isAirTemperaturePresent)
