@@ -4,12 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mapreducedata.maxtemperature.WeatherData;
 import mapreducedata.maxtemperature.WeatherDataImporter;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static mapreduceinjava8.utils.HasEqualContents.hasEqualContents;
 import static org.hamcrest.Matchers.equalTo;
@@ -19,45 +19,49 @@ import static org.junit.Assert.assertThat;
 public class MaxTemperatureTest {
 
     // given
-
     private static final List<WeatherData> DATA_1901 = new WeatherDataImporter().importData("max-temperature/input/1901");
     private static final List<WeatherData> DATA_1902 = new WeatherDataImporter().importData("max-temperature/input/1902");
-
-    /** System under test. */
-    public static final MaxTemperature MAX_TEMPERATURE = new MaxTemperature();
 
     // expected results
     public static final ImmutableList<Integer> MAX_TEMPERATURES = ImmutableList.of(317, 244);
     public static final ImmutableMap<Integer, Integer> MAX_TEMPERATURE_FOR_YEARS = ImmutableMap.of(1901, 317, 1902, 244);
 
+    /** System under test. */
+    private MaxTemperature maxTemperature;
+
+    @Before
+    public void setUp() {
+        maxTemperature = new MaxTemperature();
+    }
+
     @Test
     public void max_temperature_from_single_collection() {
 
         // when
-        final Integer maxTemperature = MAX_TEMPERATURE.inSingleCollection(DATA_1902);
+        final Integer temperature = maxTemperature.inSingleCollection(DATA_1902);
 
         // then
-        assertThat(maxTemperature, is(equalTo(244)));
+        assertThat(temperature, is(equalTo(244)));
     }
 
     @Test
     public void maybe_max_temperature_from_single_collection() {
 
         // when
-        final Optional<Integer> maxTemperature = MAX_TEMPERATURE.maybeInSingleCollection(DATA_1902);
+        final Optional<Integer> temperature = maxTemperature.maybeInSingleCollection(DATA_1902);
 
         // then
-        assertThat(maxTemperature, is(equalTo(Optional.of(244))));
+        assertThat(temperature, is(equalTo(Optional.of(244))));
     }
 
     @Test
     public void max_temperature_from_multiple_collections() {
 
         // when
-        final List<Integer> maxTemperatures = MAX_TEMPERATURE.inMultipleCollections(DATA_1901, DATA_1902);
+        final List<Integer> temperatures = maxTemperature.inMultipleCollections(DATA_1901, DATA_1902);
 
         // then
-        assertThat(MAX_TEMPERATURES, is(maxTemperatures));
+        assertThat(MAX_TEMPERATURES, is(temperatures));
     }
 
     @Test
@@ -67,12 +71,9 @@ public class MaxTemperatureTest {
         final ImmutableMap<Integer, List<WeatherData>> recordsForYears = ImmutableMap.of(1901, DATA_1901, 1902, DATA_1902);
 
         // when
-        final Map<Integer, Integer> maxTemperatureForYears = recordsForYears.entrySet().stream()
-                .collect(
-                        Collectors.toMap(Map.Entry::getKey, recordsForYear -> MAX_TEMPERATURE.inSingleCollection(recordsForYear.getValue()))
-                );
+        final Map<Integer, Integer> temperaturesForYears = maxTemperature.inMultipleCollectionsForYears(recordsForYears);
 
         // then
-        assertThat(MAX_TEMPERATURE_FOR_YEARS, hasEqualContents(maxTemperatureForYears));
+        assertThat(MAX_TEMPERATURE_FOR_YEARS, hasEqualContents(temperaturesForYears));
     }
 }
