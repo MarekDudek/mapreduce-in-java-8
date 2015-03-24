@@ -34,8 +34,7 @@ public class MaxTemperature {
     public List<Integer> inMultipleCollections(final List<WeatherData> ... collections) {
 
         final List<Integer> maxTemperatures = Stream.of(collections)
-                .map(collection -> maybeInSingleCollection(collection))
-                .map(maybe -> maybe.get())
+                .map(collection -> inSingleCollection(collection))
                 .collect(Collectors.toList());
 
         return maxTemperatures;

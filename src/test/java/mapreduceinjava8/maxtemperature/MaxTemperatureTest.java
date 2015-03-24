@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static mapreduceinjava8.utils.HasEqualContents.hasEqualContents;
 import static org.hamcrest.Matchers.equalTo;
@@ -31,7 +31,7 @@ public class MaxTemperatureTest {
     public static final ImmutableMap<Integer, Integer> MAX_TEMPERATURE_FOR_YEARS = ImmutableMap.of(1901, 317, 1902, 244);
 
     @Test
-    public void max_temperature_from_single_year_should_be_correctly_computed() {
+    public void max_temperature_from_single_collection() {
 
         // when
         final Integer maxTemperature = MAX_TEMPERATURE.inSingleCollection(DATA_1902);
@@ -41,19 +41,17 @@ public class MaxTemperatureTest {
     }
 
     @Test
-    public void max_temperature_from_multiple_years_should_be_correctly_computed() {
+    public void maybe_max_temperature_from_single_collection() {
 
         // when
-        final List<Integer> maxTemperatures = Stream.of(DATA_1901, DATA_1902)
-                .map(MAX_TEMPERATURE::inSingleCollection)
-                .collect(Collectors.toList());
+        final Optional<Integer> maxTemperature = MAX_TEMPERATURE.maybeInSingleCollection(DATA_1902);
 
         // then
-        assertThat(MAX_TEMPERATURES, is(maxTemperatures));
+        assertThat(maxTemperature, is(equalTo(Optional.of(244))));
     }
 
     @Test
-    public void maybe_max_temperature_from_multiple_collections() {
+    public void max_temperature_from_multiple_collections() {
 
         // when
         final List<Integer> maxTemperatures = MAX_TEMPERATURE.inMultipleCollections(DATA_1901, DATA_1902);
@@ -63,7 +61,7 @@ public class MaxTemperatureTest {
     }
 
     @Test
-    public void test() {
+    public void max_temperature_from_multiple_collections_for_years() {
 
         // given
         final ImmutableMap<Integer, List<WeatherData>> recordsForYears = ImmutableMap.of(1901, DATA_1901, 1902, DATA_1902);
