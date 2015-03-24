@@ -34,7 +34,7 @@ public class MaxTemperatureTest {
     public void max_temperature_from_single_year_should_be_correctly_computed() {
 
         // when
-        final Integer maxTemperature = new MaxTemperature().inSingleCollection(DATA_1902);
+        final Integer maxTemperature = MAX_TEMPERATURE.inSingleCollection(DATA_1902);
 
         // then
         assertThat(maxTemperature, is(equalTo(244)));
@@ -56,10 +56,7 @@ public class MaxTemperatureTest {
     public void maybe_max_temperature_from_multiple_collections() {
 
         // when
-        final List<Integer> maxTemperatures = Stream.of(DATA_1901, DATA_1902)
-                .map(MAX_TEMPERATURE::maybeInSingleCollection)
-                .map(maybe -> maybe.get())
-                .collect(Collectors.toList());
+        final List<Integer> maxTemperatures = MAX_TEMPERATURE.inMultipleCollections(DATA_1901, DATA_1902);
 
         // then
         assertThat(MAX_TEMPERATURES, is(maxTemperatures));
