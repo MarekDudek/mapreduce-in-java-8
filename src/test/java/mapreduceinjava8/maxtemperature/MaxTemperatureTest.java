@@ -2,6 +2,8 @@ package mapreduceinjava8.maxtemperature;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import mapreducedata.maxtemperature.WeatherData;
 import mapreducedata.maxtemperature.WeatherDataImporter;
 import org.junit.Before;
@@ -10,6 +12,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static mapreduceinjava8.utils.HasEqualContents.hasEqualContents;
 import static org.hamcrest.Matchers.equalTo;
@@ -72,6 +75,24 @@ public class MaxTemperatureTest {
 
         // when
         final Map<Integer, Integer> temperaturesForYears = maxTemperature.inMultipleCollectionsForYears(recordsForYears);
+
+        // then
+        assertThat(MAX_TEMPERATURE_FOR_YEARS, hasEqualContents(temperaturesForYears));
+    }
+
+    @Test
+    public void max_temperature_per_year_from_merged_collections() {
+
+        // given
+        final List<WeatherData> mergedData = Lists.newArrayList(Iterables.concat(DATA_1901, DATA_1902));
+
+        // when
+        final Map<Integer, List<WeatherData>> grouppedByYear = mergedData.stream()
+                .collect(
+                        Collectors.groupingBy(WeatherData::getYear)
+                );
+
+        final Map<Integer, Integer> temperaturesForYears = maxTemperature.inMultipleCollectionsForYears(grouppedByYear);
 
         // then
         assertThat(MAX_TEMPERATURE_FOR_YEARS, hasEqualContents(temperaturesForYears));
